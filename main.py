@@ -114,8 +114,8 @@ def compare_sitemaps(request):
             removed_urls_list = "No URLs are removed."
 
         comment = (
-            f"**👉 Production Website has {len(base_urls)} in its Sitemap.**\n{base_url}\n\n"
-            f"**👉 Preview Website has {len(prev_urls)} in its Sitemap.**\n{prev_url}\n\n"
+            f"**👉 Production website has {len(base_urls)} URLs in its Sitemap.**\n{base_url}\n\n"
+            f"**👉 Preview website has {len(prev_urls)} URLs in its Sitemap.**\n{prev_url}\n\n"
             f"**📈 Added URLs ({len(added_urls)}):**\n{added_urls_list}\n\n"
             f"**📉 Removed URLs ({len(removed_urls)}):**\n{removed_urls_list}\n\n"
             f"**📊 Num of pages:**\n{len(base_urls)} + {len(added_urls)} - {len(removed_urls)} = {len(prev_urls)}"
