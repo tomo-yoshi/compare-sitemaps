@@ -14,3 +14,9 @@ gcloud functions deploy compareSitemaps \
   --allow-unauthenticated \
   --entry-point compare_sitemaps \
 ```
+
+## Set up
+
+### Vercel
+- Turn off "Vercel Authentication" in Deployment Protection to allow the endpoint to access preview pages
+![Vercel Authentication](./assets/vercel_screenshot.png)
