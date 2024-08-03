@@ -36,11 +36,14 @@ def find_url(text):
         return "https://canadapolarbears.com"
     elif "northernlightscanada" in text:
         return "https://northernlightscanada.com"
+    elif "freshtrackscanada" in text:
+        return "https://freshtrackscanada.com"
     else:
         return None
 
 def fetch_sitemap(url):
     response = requests.get(url)
+    print("fetch_sitemap", response)
     response.raise_for_status()
     return ET.fromstring(response.content)
 
@@ -68,23 +71,26 @@ def compare_sitemaps(request):
 
     try:
         if event != "issue_comment":
+            print("Invalid event")
             return jsonify(error="Invalid event"), 400
-        
+                
         comment_body = payload['comment']['body']
         repo_owner = payload['repository']['owner']['login']
         repo_name = payload['repository']['name']
         issue_number = payload['issue']['number']
 
         if not check_keywords(comment_body):
-            return jsonify(error="No Keywords"), 400
-            
+            print("No Keywords found")
+            return jsonify(error="No Keywords found"), 400
+                    
         prev_url = extract_first_url(comment_body)
 
         base_url = find_url(prev_url)
 
         if not prev_url or not base_url:
+            print("Invalid URL")
             return jsonify(error="Invalid URL"), 400
-        
+                
         prev_url += "/sitemap.xml"
         base_url += "/sitemap.xml"
 
@@ -108,8 +114,11 @@ def compare_sitemaps(request):
             removed_urls_list = "No URLs are removed."
 
         comment = (
+            f"**👉 Production Website has {len(base_urls)} in its Sitemap.**\n{base_url}\n\n"
+            f"**👉 Preview Website has {len(prev_urls)} in its Sitemap.**\n{prev_url}\n\n"
             f"**📈 Added URLs ({len(added_urls)}):**\n{added_urls_list}\n\n"
-            f"**📉 Removed URLs ({len(removed_urls)}):**\n{removed_urls_list}"
+            f"**📉 Removed URLs ({len(removed_urls)}):**\n{removed_urls_list}\n\n"
+            f"**📊 Num of pages:**\n{len(base_urls)} + {len(added_urls)} - {len(removed_urls)} = {len(prev_urls)}"
         )
         post_github_comment(repo_owner, repo_name, issue_number, comment)
 
