@@ -1,4 +1,6 @@
+import logging
 import requests
+from requests.exceptions import HTTPError, RequestException
 import re
 import os
 import xml.etree.ElementTree as ET
@@ -9,6 +11,8 @@ GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 ALLOWED_ORIGINS = [
     "https://api.github.com",
 ]
+
+logging.basicConfig(level=logging.INFO)
 
 def is_allowed_origin(origin):
     if not origin:
@@ -42,10 +46,20 @@ def find_url(text):
         return None
 
 def fetch_sitemap(url):
-    response = requests.get(url)
-    print("fetch_sitemap", response)
-    response.raise_for_status()
-    return ET.fromstring(response.content)
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        logging.info(f"Sitemap fetched successfully from {url}")
+        return ET.fromstring(response.content)
+    except HTTPError as http_err:
+        logging.error(f"HTTP error occurred: {http_err}")
+        raise
+    except RequestException as req_err:
+        logging.error(f"Request error occurred: {req_err}")
+        raise
+    except Exception as err:
+        logging.error(f"An error occurred: {err}")
+        raise
 
 def get_urls(sitemap):
     namespaces = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
@@ -62,6 +76,10 @@ def post_github_comment(owner, repo, issue_number, comment):
 
 def compare_sitemaps(request):
     """Main function for comparing sitemaps."""
+
+    if not GITHUB_TOKEN:
+        raise ValueError("GITHUB_TOKEN is not set")
+
     payload = request.json
 
     if not is_allowed_origin(payload['issue']['url']):
@@ -71,7 +89,7 @@ def compare_sitemaps(request):
 
     try:
         if event != "issue_comment":
-            print("Invalid event")
+            logging.error("Invalid event")
             return jsonify(error="Invalid event"), 400
                 
         comment_body = payload['comment']['body']
@@ -80,7 +98,7 @@ def compare_sitemaps(request):
         issue_number = payload['issue']['number']
 
         if not check_keywords(comment_body):
-            print("No Keywords found")
+            logging.error("No Keywords found")
             return jsonify(error="No Keywords found"), 400
                     
         prev_url = extract_first_url(comment_body)
@@ -88,7 +106,7 @@ def compare_sitemaps(request):
         base_url = find_url(prev_url)
 
         if not prev_url or not base_url:
-            print("Invalid URL")
+            logging.error("Invalid URL")
             return jsonify(error="Invalid URL"), 400
                 
         prev_url += "/sitemap.xml"
