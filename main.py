@@ -4,6 +4,7 @@ from requests.exceptions import HTTPError, RequestException
 import re
 import os
 import xml.etree.ElementTree as ET
+from typing import Optional, Set
 from flask import jsonify
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
@@ -14,7 +15,7 @@ ALLOWED_ORIGINS = [
 
 logging.basicConfig(level=logging.INFO)
 
-def is_allowed_origin(origin):
+def is_allowed_origin(origin: str):
     if not origin:
         return False
     for allowed_origin in ALLOWED_ORIGINS:
@@ -22,18 +23,18 @@ def is_allowed_origin(origin):
             return True
     return False
 
-def check_keywords(comment_body):
+def check_keywords(comment_body: str):
     keywords = ["tommy", "compare", "sitemap"]
     return all(keyword in comment_body.lower() for keyword in keywords)
 
-def extract_first_url(text):
+def extract_first_url(text: str) -> Optional[str]:
     url_pattern = r'https?://(?:www\.)?\w+(?:[\w\-._~:/?#[\]@!$&\'()*+,;%=]*)'
     
     match = re.search(url_pattern, text)
     
     return match.group(0) if match else None
 
-def find_url(text):
+def find_url(text: str):
     if "canadiantrainvacations" in text:
         return "https://canadiantrainvacations.com"
     elif "canadapolarbears" in text:
@@ -45,7 +46,7 @@ def find_url(text):
     else:
         return None
 
-def fetch_sitemap(url):
+def fetch_sitemap(url: str):
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -61,7 +62,7 @@ def fetch_sitemap(url):
         logging.error(f"An error occurred: {err}")
         raise
 
-def get_urls(sitemap):
+def get_urls(sitemap: ET.Element) -> Set[str]:
     namespaces = {'ns': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
     return {url.findtext('ns:loc', namespaces=namespaces) for url in sitemap.findall('.//ns:url', namespaces)}
 
