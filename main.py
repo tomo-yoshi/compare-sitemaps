@@ -114,11 +114,9 @@ def compare_sitemaps(request):
             removed_urls_list = "No URLs are removed."
 
         comment = (
-            f"**👉 Production website has {len(base_urls)} URLs in its Sitemap.**\n{base_url}\n\n"
-            f"**👉 Preview website has {len(prev_urls)} URLs in its Sitemap.**\n{prev_url}\n\n"
+            f"**👉 Number of Pages in Sitemaps:**\n- {base_url} ({len(base_urls)})\n- {prev_url} ({len(base_urls)} + {len(added_urls)} - {len(removed_urls)} = **{len(prev_urls)}**)\n\n"
             f"**📈 Added URLs ({len(added_urls)}):**\n{added_urls_list}\n\n"
             f"**📉 Removed URLs ({len(removed_urls)}):**\n{removed_urls_list}\n\n"
-            f"**📊 Num of pages:**\n{len(base_urls)} + {len(added_urls)} - {len(removed_urls)} = {len(prev_urls)}"
         )
         post_github_comment(repo_owner, repo_name, issue_number, comment)
 
