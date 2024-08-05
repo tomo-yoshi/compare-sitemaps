@@ -1,5 +1,23 @@
 # Compare Sitemaps
 
+## About this Project
+
+This code is supposed to be used as a serverless function deployed to GCP. The function is to compare sitemaps and post a summary on GitHub PR. 
+
+This function helps compare sitemaps between the production and the preview environments in QA. You no longer have to visit sitemap pages and compare them with your eyes.
+
+
+## Table of Contents
+1. [Tech Stack](#tech-stack)
+2. [How to Use](#how-to-use)
+3. [Setup](#setup)
+    1. [Code](#code)
+    2. [Vercel](#vercel)
+4. [Deployment](#deployment)
+    1. [GCP](#gcp)
+    2. [Deploy the Function](#deploy-the-function)
+
+
 ## Tech Stack
 
 <div align="center">
@@ -17,22 +35,6 @@
 - **Flask**: Lightweight web framework for handling HTTP requests.
 - **Google Cloud Functions**: Serverless execution environment for deploying the function.
 - **GitHub API**: For posting comments on pull requests.
-
-## Table of Contents
-1. [About this Project](#about-this-project)
-2. [How to Use](#how-to-use)
-3. [Setup](#set-up)
-    1. [Code](#code)
-    2. [Vercel](#vercel)
-4. [Deployment](#deployment)
-    1. [GCP](#gcp)
-    2. [Deploy the Function](#deploy-the-function)
-
-## About this Project
-
-This code is supposed to be used as a serverless function deployed to GCP. The function is to compare sitemaps and post a summary on GitHub PR. 
-
-This function helps compare sitemaps between the production and the preview environments in QA. You no longer have to visit sitemap pages and compare them with your eyes.
 
 
 ## How to Use
